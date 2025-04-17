@@ -3,20 +3,23 @@ import random
 import sys
 from constants import *
 from os.path import join
-from sprites import Player, Star, Meteor
+from sprites import Player, Star, Meteor, Explosion
 
 def collisions():
     #If player collides with asteroid, game is over
     collision_sprites = pygame.sprite.spritecollide(player, meteor_sprites, True, pygame.sprite.collide_mask)
     if collision_sprites:
-        sys.exit("Game over man!")
+        sys.exit(f"Game over man!\nAsteroids Destroyed: {player.score}")
     
     #If laser collides with asteroid, destroy it and add to player score
     for laser in laser_sprites:
         collided_sprites = pygame.sprite.spritecollide(laser, meteor_sprites, True)
         if collided_sprites:
+            print(f"collision laser: {laser}, EXplosion frames: {explosion_frames}")
+            #Explosion(explosion_frames, laser.rect.midtop, all_sprites)
             laser.kill()
             player.score += 1
+            
 
 def display_score():
     #current_time = pygame.time.get_ticks()
@@ -38,6 +41,7 @@ clock = pygame.time.Clock()
 
 #Imports
 meteor_surface = pygame.image.load(join("images", "meteor.png")).convert_alpha()
+explosion_frames = [pygame.image.load(join("images", "explosion", f"{i}.png")).convert_alpha() for i in range (21)]
 font = pygame.font.Font(join("images", "Oxanium-Bold.ttf"), 40)
 
 

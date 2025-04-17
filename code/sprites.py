@@ -63,12 +63,15 @@ class Laser(pygame.sprite.Sprite):
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, meteor_surface, position, groups):
         super().__init__(groups)
+        self.originial_surface = meteor_surface
         self.image = meteor_surface
         self.rect = self.image.get_frect(center = position)
         self.start_time = pygame.time.get_ticks()
         self.life_time = 3500
         self.direction = pygame.Vector2(random.uniform(-0.5, 0.5), 1)
         self.speed = random.randint(300, 500)
+        self.rotation_speed = random.randint(20, 50)
+        self.rotation = 0
         #Remove later if not adding flash effect
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -76,3 +79,20 @@ class Meteor(pygame.sprite.Sprite):
         self.rect.center += self.direction * self.speed * dt
         if pygame.time.get_ticks() - self.start_time >= self.life_time:
             self.kill()
+        self.rotation += self.rotation_speed * dt
+        self.image = pygame.transform.rotozoom(self.originial_surface, self.rotation, 1)
+        self.rect = self.image.get_frect(center = self.rect.center)
+
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, frames, position, groups):
+        super().__init__(groups)
+        self.frames = frames
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.rectangle = self.image.get_frect(center = position)
+
+    def update(self, dt, *args):
+        self.frame_index += 20 * dt
+        if self.frame_index < len(self.frames):
+            self.image = self.frames[int(self.frame_index)]
+        self.kill()

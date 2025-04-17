@@ -6,25 +6,29 @@ from os.path import join
 from sprites import Player, Star, Meteor
 
 def collisions():
-    collision_sprites = pygame.sprite.spritecollide(player, meteor_sprites, False)
+    #If player collides with asteroid, game is over
+    collision_sprites = pygame.sprite.spritecollide(player, meteor_sprites, True, pygame.sprite.collide_mask)
     if collision_sprites:
         sys.exit("Game over man!")
     
+    #If laser collides with asteroid, destroy it and add to player score
     for laser in laser_sprites:
         collided_sprites = pygame.sprite.spritecollide(laser, meteor_sprites, True)
         if collided_sprites:
             laser.kill()
+            player.score += 1
 
 def display_score():
-    current_time = pygame.time.get_ticks()
-    text_surface = font.render(str(current_time), True, (240, 240, 240))
+    #current_time = pygame.time.get_ticks()
+    text_surface = font.render(str(player.score), True, (240, 240, 240))
     text_rect = text_surface.get_frect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
     display_surface.blit(text_surface, text_rect)
+    pygame.draw.rect(display_surface, (240, 240, 240), text_rect.inflate(20, 12).move(0, -8), 6, 10)
 
 
-#General game setup
 #Set the game window icon
 icon = pygame.image.load("images/icon.png")
+#General game setup
 pygame.init()
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Super Space Shooter")
